@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "active_record"
@@ -7,7 +9,7 @@ require "dotenv"
 
 require "activerecord/cte"
 
-require 'active_support/testing/autorun'
+require "active_support/testing/autorun"
 
 Dotenv.load
 ActiveRecord::Base.establish_connection
@@ -25,4 +27,3 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 end
-
