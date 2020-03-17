@@ -1,8 +1,19 @@
 one:
+  archived: false
   views_count: 90
+  language: en
 
 two:
+  archived: true
   views_count: 123
+  language: en
 
 three:
+  archived: true
   views_count: 456
+  language: de
+
+four:
+  archived: false
+  views_count: 500
+  language: de

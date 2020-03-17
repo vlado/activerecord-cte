@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+ADAPTERS = %w[
+  mysql
+  postgresql
+  sqlite3
+]
+AR_VERSIONS = %w[
+  6.0.2.1
+  5.2.4.1
+]
+
+ORIGINAL_AR_VERSION = `bundle show activerecord`.split("-").last.strip
+
+AR_VERSIONS.each do |ar_version|
+  puts "----> Running tests with ActiveRecord #{ar_version}"
+  system("ACTIVE_RECORD_VERSION=#{ar_version} bundle update activerecord") unless ar_version == ORIGINAL_AR_VERSION
+  ADAPTERS.each do |adapter|
+    puts "----> Running tests with #{adapter} adapter"
+    system("DATABASE_ADAPTER=#{adapter} ACTIVE_RECORD_VERSION=#{ar_version} bundle exec rake")
+  end
+end
+
+puts "----> Reverting back to original ActiveRecord version (#{ORIGINAL_AR_VERSION})"
+system("ACTIVE_RECORD_VERSION=#{ORIGINAL_AR_VERSION} bundle update activerecord")

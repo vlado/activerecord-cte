@@ -9,5 +9,7 @@ ACTIVE_RECORD_VERSION = ENV.fetch("ACTIVE_RECORD_VERSION") { "6.0.2.1" }
 
 gem "activerecord", ACTIVE_RECORD_VERSION
 
-gem "sqlite3", "1.4.2"
+gem "mysql2" if ENV["INSTALL_MYSQL_GEM"]
+gem "pg" if ENV["INSTALL_PG_GEM"]
 
+gem "sqlite3", "1.4.2"

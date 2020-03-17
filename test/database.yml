@@ -1,0 +1,19 @@
+mysql:
+  adapter: mysql2
+  database: activerecord_cte_test
+  username: user
+  password: secret
+  host: mysql
+  port: 3306
+
+postgresql:
+  adapter: postgresql
+  encoding: unicode
+  database: activerecord_cte_test
+  username: user
+  password: secret
+  host: postgres
+
+sqlite3:
+  adapter: sqlite3
+  database: tmp/activerecord_cte_test.db
