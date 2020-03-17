@@ -92,7 +92,6 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     recursive_term = posts.project(posts[:id]).join(popular_posts).on(posts[:id].eq(popular_posts[:id]))
 
     recursive_rel = Post.with(:recursive, popular_posts: anchor_term.union(recursive_term)).from("popular_posts AS posts")
-    assert recursive_rel.any?
     assert_equal Post.select(:id).where("views_count > 100").to_a, recursive_rel
   end
 
