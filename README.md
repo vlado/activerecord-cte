@@ -26,7 +26,21 @@ TODO: Write usage instructions here
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Setup
+
+After checking out the repo, run `bin/setup` to install dependencies.
+
+### Running tests
+
+Run `rake test` to run the tests using SQLite adapter and latest version on Rails.
+
+To run tests using all supportted database adapters and ActiveRecord versions run `rake test:matrix`. This will build Docker image with all dependencies and run alll tests in it. See `bin/test` for more info.
+
+### Console
+
+You can run `bin/console` for an interactive prompt that will allow you to experiment.
+
+### Other
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 

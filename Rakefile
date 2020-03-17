@@ -10,3 +10,9 @@ Rake::TestTask.new(:test) do |t|
 end
 
 task default: :test
+
+namespace :test do
+  task :matrix do
+    system("docker-compose build && docker-compose run lib bin/test")
+  end
+end
