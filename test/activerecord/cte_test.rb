@@ -126,4 +126,11 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     popular_posts = Post.where("views_count > 100")
     assert_equal popular_posts.to_a, Post.popular_posts
   end
+
+  def test_with_when_invalid_params_are_passed
+    assert_raise(ArgumentError) { Post.with.load }
+    assert_raise(ArgumentError) { Post.with([{ popular_posts: Post.where("views_count > 100") }]).load }
+    assert_raise(ArgumentError) { Post.with(popular_posts: nil).load }
+    assert_raise(ArgumentError) { Post.with(popular_posts: [Post.where("views_count > 100")]).load }
+  end
 end
