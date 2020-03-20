@@ -6,6 +6,35 @@ module ActiveRecord
   end
 
   class Relation
+    def delete_all
+      invalid_methods = INVALID_METHODS_FOR_DELETE_ALL.select do |method|
+        value = @values[method]
+        method == :distinct ? value : value&.any?
+      end
+      if invalid_methods.any?
+        raise ActiveRecordError.new("delete_all doesn't support #{invalid_methods.join(', ')}")
+      end
+
+      if eager_loading?
+        relation = apply_join_dependency
+        return relation.delete_all
+      end
+
+      stmt = Arel::DeleteManager.new
+      stmt.from(arel.join_sources.empty? ? table : arel.source)
+      stmt.key = arel_attribute(primary_key)
+      stmt.take(arel.limit)
+      stmt.offset(arel.offset)
+      stmt.order(*arel.orders)
+      stmt.wheres = arel.constraints
+      stmt.with = arel.ast.with
+
+      affected = @klass.connection.delete(stmt, "#{@klass} Destroy")
+
+      reset
+      affected
+    end
+
     def with(opts, *rest)
       spawn.with!(opts, *rest)
     end
@@ -72,5 +101,61 @@ module ActiveRecord
         Arel::Nodes::As.new(table, expression)
       end
     end
+  end
+end
+
+Arel::TreeManager.class_eval do
+  def with=(expr)
+    @ast.with = expr
+  end
+end
+
+Arel::Nodes::DeleteStatement.class_eval do
+  attr_accessor :with
+
+  def hash
+    [self.class, @left, @right, @orders, @limit, @offset, @key, @with].hash
+  end
+
+  def eql?(other)
+    self.class == other.class &&
+      self.left == other.left &&
+      self.right == other.right &&
+      self.orders == other.orders &&
+      self.limit == other.limit &&
+      self.offset == other.offset &&
+      self.key == other.key &&
+      self.with == other.with
+  end
+  alias :== :eql?
+end
+
+Arel::Visitors::ToSql.class_eval do
+  def prepare_update_statement(o)
+    if o.with || (o.key && (has_limit_or_offset_or_orders?(o) || has_join_sources?(o)))
+      stmt = o.clone
+      stmt.limit = nil
+      stmt.offset = nil
+      stmt.orders = []
+      stmt.wheres = [Arel::Nodes::In.new(o.key, [build_subselect(o.key, o)])]
+      stmt.relation = o.relation.left if has_join_sources?(o)
+      stmt
+    else
+      o
+    end
+  end
+  alias :prepare_delete_statement :prepare_update_statement
+
+  def build_subselect(key, o)
+    stmt             = Arel::Nodes::SelectStatement.new
+    core             = stmt.cores.first
+    core.froms       = o.relation
+    core.wheres      = o.wheres
+    core.projections = [key]
+    stmt.limit       = o.limit
+    stmt.offset      = o.offset
+    stmt.orders      = o.orders
+    stmt.with        = o.with
+    stmt
   end
 end

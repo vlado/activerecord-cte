@@ -126,4 +126,14 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     popular_posts = Post.where("views_count > 100")
     assert_equal popular_posts.to_a, Post.popular_posts
   end
+
+  def test_delete_all_and_with_call
+    ActiveRecord::Base.logger = Logger.new(STDOUT)
+    popular_posts = Post.where("views_count > 100")
+    unpopular_posts = Post.where.not("views_count > 100")
+
+    assert_changes -> { [popular_posts.count, unpopular_posts.count] }, from: [3, 1], to: [0, 1] do
+      Post.with(popular_posts: popular_posts).from("popular_posts AS posts").delete_all
+    end
+  end
 end
