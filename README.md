@@ -1,4 +1,4 @@
-# Activerecord::Cte
+# ActiveRecord::Cte
 
 Adds Common Table Expression support to ActiveRecord (Rails).
 
@@ -36,8 +36,8 @@ Post.all.arel.with([
 ])
 ```
 
-Instead of Arel you could also pass raw SQL string but either way you will NOT get `ActiveRecord::Relation` and all its "goodies".
-You will not be able to chain them further, cache them easily, call `count` and other aggregates on them, ...
+Instead of Arel you could also pass raw SQL string but either way you will NOT get `ActiveRecord::Relation` and
+you will not be able to chain them further, cache them easily, call `count` and other aggregates on them, ...
 
 ## Installation
 
@@ -59,7 +59,7 @@ Or install it yourself as:
 
 ### Hash arguments
 
-Easiest way to build the `WITH` query is to pass a `Hash` where keys are used as names of the tables and values are used to
+Easiest way to build the `WITH` query is to pass the `Hash` where keys are used as names of the tables and values are used to
 generate the SQL. You can pass `ActiveRecord::Relation`, `String` or `Arel::Nodes::As` node.
 
 ```ruby
