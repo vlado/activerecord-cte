@@ -10,8 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Vlado Cingel"]
   spec.email         = ["vladocingel@gmail.com"]
 
-  spec.summary       = "Write a short summary, because RubyGems requires one."
-  spec.description   = " Write a longer description or delete this line."
+  spec.summary       = "Brings Common Table Expressions support to ActiveRecord and makes it super easy to build and chain complex CTE queries"
   spec.homepage      = "https://github.com/vlado/activerecord-cte"
   spec.license       = "MIT"
 
