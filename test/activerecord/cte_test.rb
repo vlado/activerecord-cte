@@ -135,11 +135,11 @@ class Activerecord::CteTest < ActiveSupport::TestCase
   end
 
   def test_with_when_merging_relations
-    popular_posts = Post.with(popular_posts: Post.where("views_count > 100")).joins("join popular_posts on posts.id = popular_posts.id")
-    archived_posts = Post.with(archived_posts: Post.where(archived: true)).joins("join archived_posts on posts.id = archived_posts.id")
+    most_popular = Post.with(most_popular: Post.where("views_count >= 100").select("id as post_id")).joins("join most_popular on most_popular.post_id = posts.id")
+    least_popular = Post.with(least_popular: Post.where("views_count <= 400").select("id as post_id")).joins("join least_popular on least_popular.post_id = posts.id")
+    merged = most_popular.merge(least_popular)
 
-    merged = popular_posts.merge(archived_posts).select("popular_posts.id as popular_id, archived_posts.id as archived_id")
-    
-    assert_nothing_raised { merged.to_a }
+    assert_equal merged.size, 1
+    assert_equal merged[0].views_count, 123
   end
 end
