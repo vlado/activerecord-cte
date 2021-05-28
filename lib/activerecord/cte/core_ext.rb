@@ -4,8 +4,31 @@ module ActiveRecord
   module Querying
     delegate :with, to: :all
   end
+  
+  module WithMerger
+    def normal_values
+      super + %i[with]
+    end
+
+    def merge
+      super
+      merge_withs
+      relation
+    end
+
+    private
+
+    def merge_withs
+      other_values = other.with_values.reject { |value| relation.with_values.include?(value) }
+      relation.with!(*other_values) if other_values.any?
+    end
+  end
 
   class Relation
+    class Merger
+      prepend WithMerger
+    end
+
     def with(opts, *rest)
       spawn.with!(opts, *rest)
     end

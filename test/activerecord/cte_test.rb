@@ -133,4 +133,13 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     assert_raise(ArgumentError) { Post.with(popular_posts: nil).load }
     assert_raise(ArgumentError) { Post.with(popular_posts: [Post.where("views_count > 100")]).load }
   end
+
+  def test_with_when_merging_relations
+    popular_posts = Post.with(popular_posts: Post.where("views_count > 100")).joins("join popular_posts on posts.id = popular_posts.id")
+    archived_posts = Post.with(archived_posts: Post.where(archived: true)).joins("join archived_posts on posts.id = archived_posts.id")
+
+    merged = popular_posts.merge(archived_posts).select("popular_posts.id as popular_id, archived_posts.id as archived_id")
+    
+    assert_nothing_raised { merged.to_a }
+  end
 end
