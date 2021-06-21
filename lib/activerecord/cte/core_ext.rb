@@ -6,10 +6,6 @@ module ActiveRecord
   end
 
   module WithMerger
-    def normal_values
-      super + %i[with]
-    end
-
     def merge
       super
       merge_withs

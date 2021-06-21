@@ -142,4 +142,35 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     assert_equal(1, merged.size)
     assert_equal(123, merged[0].views_count)
   end
+
+  def test_with_when_merging_relations_with_identical_with_names_and_identical_queries
+    most_popular1 = Post.with(most_popular: Post.where("views_count >= 100"))
+    most_popular2 = Post.with(most_popular: Post.where("views_count >= 100"))
+
+    merged = most_popular1.merge(most_popular2).from("most_popular as posts")
+
+    assert_equal posts(:two, :three, :four).sort, merged.sort
+  end
+
+  def test_with_when_merging_relations_with_a_mixture_of_strings_and_relations
+    most_popular1 = Post.with(most_popular: Post.where(views_count: 456))
+    most_popular2 = Post.with(most_popular: Post.where("views_count = 456"))
+
+    merged = most_popular1.merge(most_popular2)
+
+    assert_raise ActiveRecord::StatementInvalid do
+      merged.load
+    end
+  end
+
+  def test_with_when_merging_relations_with_identical_with_names_and_different_queries
+    most_popular1 = Post.with(most_popular: Post.where("views_count >= 100"))
+    most_popular2 = Post.with(most_popular: Post.where("views_count <= 100"))
+
+    merged = most_popular1.merge(most_popular2)
+
+    assert_raise ActiveRecord::StatementInvalid do
+      merged.load
+    end
+  end
 end
