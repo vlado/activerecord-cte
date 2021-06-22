@@ -4,7 +4,7 @@ module ActiveRecord
   module Querying
     delegate :with, to: :all
   end
-  
+
   module WithMerger
     def normal_values
       super + %i[with]
@@ -56,7 +56,7 @@ module ActiveRecord
       arel
     end
 
-    def build_with(arel) # rubocop:disable Metrics/MethodLength
+    def build_with(arel) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
       return if with_values.empty?
 
       recursive = with_values.delete(:recursive)

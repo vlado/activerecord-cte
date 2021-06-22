@@ -12,7 +12,7 @@ require "activerecord/cte"
 
 require "active_support/testing/autorun"
 
-adapter = ENV.fetch("DATABASE_ADAPTER") { "sqlite3" }
+adapter = ENV.fetch("DATABASE_ADAPTER", "sqlite3")
 
 db_config = YAML.load_file("test/database.yml")[adapter]
 

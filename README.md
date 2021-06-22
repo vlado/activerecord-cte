@@ -196,6 +196,12 @@ I decided to wait a bit :)
 
 After checking out the repo, run `bin/setup` to install dependencies.
 
+### Running Rubocop
+
+```
+bundle exec rubocop
+```
+
 ### Running tests
 
 Run `rake test` to run the tests using SQLite adapter and latest version on Rails.
@@ -220,4 +226,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Activerecord::Cte project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/activerecord-cte/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Activerecord::Cte project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/vlado/activerecord-cte/blob/master/CODE_OF_CONDUCT.md).
