@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["vladocingel@gmail.com"]
 
   spec.summary       = "Brings Common Table Expressions support to ActiveRecord and makes it super easy to build and chain complex CTE queries"
+  spec.description   = spec.summary
   spec.homepage      = "https://github.com/vlado/activerecord-cte"
   spec.license       = "MIT"
 
@@ -19,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/vlado/activerecord-cte"
 
+  spec.required_ruby_version = ">= 1.9.2"
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
   spec.files = Dir.chdir(File.expand_path(__dir__)) do
@@ -33,7 +35,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "rake", "~> 13.0.1"
-  spec.add_development_dependency "rubocop", "~> 0.80.1"
-  spec.add_development_dependency "rubocop-performance", "~> 1.5.2"
+  spec.add_development_dependency "rubocop", "~> 1.17.0"
+  spec.add_development_dependency "rubocop-minitest", "~> 0.13.0"
+  spec.add_development_dependency "rubocop-performance", "~> 1.11.3"
+  spec.add_development_dependency "rubocop-rake", "~> 0.5.1"
   spec.add_development_dependency "sqlite3"
 end

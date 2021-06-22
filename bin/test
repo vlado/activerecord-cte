@@ -5,11 +5,11 @@ ADAPTERS = %w[
   mysql
   postgresql
   sqlite3
-]
+].freeze
 AR_VERSIONS = %w[
   6.0.2.1
   5.2.4.1
-]
+].freeze
 
 ORIGINAL_AR_VERSION = `bundle show activerecord`.split("-").last.strip
 

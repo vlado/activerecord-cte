@@ -139,7 +139,7 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     least_popular = Post.with(least_popular: Post.where("views_count <= 400").select("id as post_id")).joins("join least_popular on least_popular.post_id = posts.id")
     merged = most_popular.merge(least_popular)
 
-    assert_equal merged.size, 1
-    assert_equal merged[0].views_count, 123
+    assert_equal(1, merged.size)
+    assert_equal(123, merged[0].views_count)
   end
 end

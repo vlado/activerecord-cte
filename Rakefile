@@ -12,6 +12,7 @@ end
 task default: :test
 
 namespace :test do
+  desc "Will run the tests in all db adapters - AR version combinations"
   task :matrix do
     system("docker-compose build && docker-compose run lib bin/test")
   end

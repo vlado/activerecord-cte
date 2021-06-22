@@ -1,8 +1,14 @@
 require:
+  - rubocop-minitest
   - rubocop-performance
+  - rubocop-rake
 
 AllCops:
-  TargetRubyVersion: 2.6
+  NewCops: enable
+  TargetRubyVersion: 2.7
+
+Gemspec/RequiredRubyVersion:
+  Enabled: false
 
 Layout/LineLength:
   AllowHeredoc: true
@@ -10,14 +16,29 @@ Layout/LineLength:
   IgnoreCopDirectives: true
   Max: 120
   Exclude:
+    - "activerecord-cte.gemspec"
     - "test/**/*"
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
 
 Metrics/AbcSize:
   Exclude:
-    - "test/**/*"
+    - "test/**/*_test.rb"
+
+Metrics/ClassLength:
+  Exclude:
+    - "test/**/*_test.rb"
 
 Metrics/CyclomaticComplexity:
   Max: 7
+
+Metrics/MethodLength:
+  Exclude:
+    - "test/**/*_test.rb"
+
+Minitest/MultipleAssertions:
+  Max: 5
 
 Style/ClassAndModuleChildren:
   Enabled: false
