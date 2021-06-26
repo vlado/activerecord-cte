@@ -1,0 +1,12 @@
+name: Rubocop
+on: [push]
+jobs:
+  Rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+      - run: bundle install
+      - run: bundle exec rubocop

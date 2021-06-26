@@ -12,9 +12,13 @@ require "activerecord/cte"
 
 require "active_support/testing/autorun"
 
-adapter = ENV.fetch("DATABASE_ADAPTER", "sqlite3")
+# Suppress keyword parameters warnings for ActiveRecord < 6.0.3
+# Otherwise test output is flooded with warnings like:
+#   warning: Using the last argument as keyword parameters is deprecated; maybe ** should be added to the call
+Warning[:deprecated] = false if ENV["ACTIVE_RECORD_VERSION"] && ENV["ACTIVE_RECORD_VERSION"] < "6.0.3"
 
-db_config = YAML.load_file("test/database.yml")[adapter]
+adapter = ENV.fetch("DATABASE_ADAPTER", "sqlite3")
+db_config = YAML.safe_load(ERB.new(File.read("test/database.yml")).result)[adapter]
 
 ActiveRecord::Base.configurations = { "test" => db_config } # Key must be string for older AR versions
 ActiveRecord::Tasks::DatabaseTasks.create(db_config) if %w[postgresql mysql].include?(adapter)

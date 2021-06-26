@@ -1,5 +1,10 @@
 # ActiveRecord::Cte
 
+![Rubocop](https://github.com/vlado/activerecord-cte/actions/workflows/rubocop.yml/badge.svg)
+![MySQL](https://github.com/vlado/activerecord-cte/actions/workflows/test-with-mysql.yml/badge.svg)
+![PostgreSQL](https://github.com/vlado/activerecord-cte/actions/workflows/test-with-postgresql.yml/badge.svg)
+![SQLite](https://github.com/vlado/activerecord-cte/actions/workflows/test-with-sqlite.yml/badge.svg)
+
 Adds Common Table Expression support to ActiveRecord (Rails).
 
 It adds `.with` query method and makes it super easy to build and chain complex CTE queries. Let's explain it using simple example.

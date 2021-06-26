@@ -1,0 +1,34 @@
+name: PostgreSQL
+on: [push]
+jobs:
+  Test-With-PostgreSQL:
+    runs-on: ubuntu-latest
+    container: ruby:2.7
+    strategy:
+      fail-fast: false
+      matrix:
+        active_record: [6.0.4, 5.2.6]
+    env:
+      ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
+      DATABASE_ADAPTER: postgresql
+      INSTALL_PG_GEM: true
+      RAILS_ENV: test
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Bundle dependencies
+        run: bundle install
+      - name: Run tests
+        run: bundle exec rake test
