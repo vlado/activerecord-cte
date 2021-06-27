@@ -1,0 +1,25 @@
+name: MySql
+on: [push]
+jobs:
+  Test-With-Mysql:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        active_record: [6.0.4, 5.2.6]
+    env:
+      ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
+      DATABASE_ADAPTER: mysql
+      INSTALL_MYSQL_GEM: true
+      RAILS_ENV: test
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Start mysql
+        run: sudo service mysql start
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Run tests
+        run: bundle exec rake test

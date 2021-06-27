@@ -14,6 +14,8 @@ task default: :test
 namespace :test do
   desc "Will run the tests in all db adapters - AR version combinations"
   task :matrix do
+    require "English"
     system("docker-compose build && docker-compose run lib bin/test")
+    exit($CHILD_STATUS.exitstatus) unless $CHILD_STATUS.success?
   end
 end

@@ -5,7 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in activerecord-cte.gemspec
 gemspec
 
-ACTIVE_RECORD_VERSION = ENV.fetch("ACTIVE_RECORD_VERSION", "6.0.2.1")
+ACTIVE_RECORD_VERSION = ENV.fetch("ACTIVE_RECORD_VERSION", "6.0.4")
 
 gem "activerecord", ACTIVE_RECORD_VERSION
 

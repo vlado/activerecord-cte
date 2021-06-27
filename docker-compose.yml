@@ -15,9 +15,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: activerecord_cte_test
-      MYSQL_USER: user
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
     ports:
       - 3306:3306
     expose:
@@ -28,8 +28,8 @@ services:
     restart: always
     environment:
       POSTGRES_DB: activerecord_cte_test
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: secret
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - 5432:5432
     expose:
