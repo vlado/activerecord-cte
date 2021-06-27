@@ -18,8 +18,8 @@ jobs:
       - name: Start mysql
         run: sudo service mysql start
       - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-      - name: Bundle dependencies
-        run: bundle install
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run tests
         run: bundle exec rake test
