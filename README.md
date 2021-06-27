@@ -209,7 +209,11 @@ bundle exec rubocop
 
 ### Running tests
 
-Run `bundle exec rake test` to run the tests using SQLite adapter and latest version on Rails.
+To run the tests using SQLite adapter and latest version on Rails run
+
+```
+bundle exec rake test
+```
 
 GitHub Actions will run the test matrix with multiple ActiveRecord versions and database adapters. You can also run the matrix locally with
 
