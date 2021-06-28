@@ -2,17 +2,18 @@
 # frozen_string_literal: true
 
 require "English"
+require "yaml"
 
-ADAPTERS = %w[
-  mysql
-  postgresql
-  sqlite3
-].freeze
+active_record_versions = []
+database_adapters = []
 
-ACTIVE_RECORD_VERSIONS = %w[
-  6.0.4
-  5.2.6
-].freeze
+# Extract ActiveRecord versions and database adapters from CI workflows
+Dir[".github/workflows/test-**.yml"].each do |path|
+  yml = YAML.load_file(path)
+  job = yml["jobs"].values.first
+  active_record_versions << job["strategy"]["matrix"]["active_record"]
+  database_adapters << job["env"]["DATABASE_ADAPTER"]
+end
 
 class Matrix
   def self.run
@@ -25,11 +26,11 @@ class Matrix
 
   def run # rubocop:disable Metrics/MethodLength
     original_ar_version = `bundle show activerecord`.split("-").last.strip
-    ACTIVE_RECORD_VERSIONS.each do |ar_version|
+    active_record_versions.flatten.uniq.each do |ar_version|
       puts "----> Switching ActiveRecord to version #{ar_version}"
       cmd("ACTIVE_RECORD_VERSION=#{ar_version} bundle update activerecord")
 
-      ADAPTERS.each do |adapter|
+      database_adapters.each do |adapter|
         puts "----> Running tests with ActiveRecord #{ar_version} and #{adapter} adapter"
         cmd("DATABASE_ADAPTER=#{adapter} ACTIVE_RECORD_VERSION=#{ar_version} bundle exec rake test")
       end
