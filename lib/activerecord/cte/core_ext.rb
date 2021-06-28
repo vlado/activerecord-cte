@@ -46,8 +46,8 @@ module ActiveRecord
 
     private
 
-    def build_arel(aliases)
-      arel = super(aliases)
+    def build_arel(*args, **kwargs)
+      arel = super
       build_with(arel) if @values[:with]
       arel
     end
