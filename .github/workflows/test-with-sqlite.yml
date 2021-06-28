@@ -1,5 +1,5 @@
 name: SQLite
-on: [push, pull_request]
+on: [pull_request]
 jobs:
   Test-With-SQLite:
     runs-on: ubuntu-latest
