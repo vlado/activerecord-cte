@@ -16,26 +16,17 @@ Dir[".github/workflows/test-**.yml"].each do |path|
 end
 
 class Matrix
-  def self.run
-    new.run
-  end
-
-  def initialize
+  def initialize(active_record_versions, database_adapters)
+    @active_record_versions = active_record_versions
+    @database_adapters = database_adapters
     @exit_status_code = 0
   end
 
-  def run # rubocop:disable Metrics/MethodLength
+  def run
     original_ar_version = `bundle show activerecord`.split("-").last.strip
-    active_record_versions.flatten.uniq.each do |ar_version|
-      puts "----> Switching ActiveRecord to version #{ar_version}"
-      cmd("ACTIVE_RECORD_VERSION=#{ar_version} bundle update activerecord")
-
-      database_adapters.each do |adapter|
-        puts "----> Running tests with ActiveRecord #{ar_version} and #{adapter} adapter"
-        cmd("DATABASE_ADAPTER=#{adapter} ACTIVE_RECORD_VERSION=#{ar_version} bundle exec rake test")
-      end
+    @active_record_versions.each do |ar_version|
+      run_with_active_record_version(ar_version)
     end
-
     puts "----> Reverting back to original ActiveRecord version (#{original_ar_version})"
     cmd("ACTIVE_RECORD_VERSION=#{original_ar_version} bundle update activerecord")
 
@@ -48,6 +39,16 @@ class Matrix
     system(cmd)
     @exit_status_code = $CHILD_STATUS.exitstatus unless $CHILD_STATUS.success?
   end
+
+  def run_with_active_record_version(ar_version)
+    puts "----> Switching ActiveRecord to version #{ar_version}"
+    cmd("ACTIVE_RECORD_VERSION=#{ar_version} bundle update activerecord")
+
+    @database_adapters.each do |adapter|
+      puts "----> Running tests with ActiveRecord #{ar_version} and #{adapter} adapter"
+      cmd("DATABASE_ADAPTER=#{adapter} ACTIVE_RECORD_VERSION=#{ar_version} bundle exec rake test")
+    end
+  end
 end
 
-Matrix.run
+Matrix.new(active_record_versions.flatten.uniq, database_adapters.uniq).run
