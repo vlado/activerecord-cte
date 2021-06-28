@@ -1,5 +1,5 @@
 name: Rubocop
-on: [push]
+on: [push, pull_request]
 jobs:
   Rubocop:
     runs-on: ubuntu-latest

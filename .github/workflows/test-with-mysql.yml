@@ -1,5 +1,5 @@
 name: MySql
-on: [push]
+on: [push, pull_request]
 jobs:
   Test-With-Mysql:
     runs-on: ubuntu-latest
