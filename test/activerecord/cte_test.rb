@@ -15,6 +15,9 @@ class Activerecord::CteTest < ActiveSupport::TestCase
   end
 
   def test_with_when_string_is_passed_as_an_argument
+    # Guard can be removed when new version that includes https://github.com/rails/rails/pull/42563 is released and configured in test matrix
+    return if ActiveRecord.version == Gem::Version.create("6.1.4")
+
     popular_posts = Post.where("views_count > 100")
     popular_posts_from_cte = Post.with("popular_posts AS (SELECT * FROM posts WHERE views_count > 100)").from("popular_posts AS posts")
     assert popular_posts.any?
@@ -172,5 +175,15 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     assert_raise ActiveRecord::StatementInvalid do
       merged.load
     end
+  end
+
+  def test_update_all_works_as_expected
+    Post.with(most_popular: Post.where("views_count >= 100")).update_all(views_count: 123)
+    assert_equal [123], Post.pluck("DISTINCT views_count")
+  end
+
+  def test_delete_all_works_as_expected
+    Post.with(most_popular: Post.where("views_count >= 100")).delete_all
+    assert_equal 0, Post.count
   end
 end
