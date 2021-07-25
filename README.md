@@ -5,7 +5,7 @@
 ![PostgreSQL](https://github.com/vlado/activerecord-cte/actions/workflows/test-with-postgresql.yml/badge.svg)
 ![SQLite](https://github.com/vlado/activerecord-cte/actions/workflows/test-with-sqlite.yml/badge.svg)
 
-Adds Common Table Expression support to ActiveRecord (Rails).
+Adds [Common Table Expression](https://en.wikipedia.org/wiki/Hierarchical_and_recursive_queries_in_SQL#Common_table_expression) support to ActiveRecord (Rails).
 
 It adds `.with` query method and makes it super easy to build and chain complex CTE queries. Let's explain it using simple example.
 
@@ -26,6 +26,8 @@ WITH posts_with_comments AS (
 )
 SELECT * FROM posts
 ```
+
+**Please note that this creates the expressions but is not using them yet. See [Taking it further](#taking-it-further) for more info.**
 
 Without this gem you would need to use `Arel` directly.
 
