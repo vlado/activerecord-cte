@@ -7,6 +7,12 @@ jobs:
       fail-fast: false
       matrix:
         active_record: [6.1.4, 6.0.4, 5.2.6]
+        # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
+        ruby: [2.6, 2.7, '3.0']
+        exclude:
+          - active_record: 5.2.6
+            ruby: '3.0'
+
     env:
       ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
       DATABASE_ADAPTER: sqlite3
@@ -17,6 +23,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run tests
         run: bundle exec rake test
