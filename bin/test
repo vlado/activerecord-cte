@@ -4,16 +4,8 @@
 require "English"
 require "yaml"
 
-active_record_versions = []
-database_adapters = []
-
-# Extract ActiveRecord versions and database adapters from CI workflows
-Dir[".github/workflows/test-**.yml"].each do |path|
-  yml = YAML.load_file(path)
-  job = yml["jobs"].values.first
-  active_record_versions << job["strategy"]["matrix"]["active_record"]
-  database_adapters << job["env"]["DATABASE_ADAPTER"]
-end
+active_record_versions = %w[6.1.4 6.0.4]
+database_adapters = %w[mysql postgresql sqlite3]
 
 class Matrix
   def initialize(active_record_versions, database_adapters)
@@ -28,7 +20,7 @@ class Matrix
       run_with_active_record_version(ar_version)
     end
     puts "----> Reverting back to original ActiveRecord version (#{original_ar_version})"
-    cmd("ACTIVE_RECORD_VERSION=#{original_ar_version} bundle update activerecord")
+    cmd("ACTIVE_RECORD_VERSION=#{original_ar_version} bundle update")
 
     exit(@exit_status_code) unless @exit_status_code.zero?
   end
@@ -42,7 +34,7 @@ class Matrix
 
   def run_with_active_record_version(ar_version)
     puts "----> Switching ActiveRecord to version #{ar_version}"
-    cmd("ACTIVE_RECORD_VERSION=#{ar_version} bundle update activerecord")
+    cmd("ACTIVE_RECORD_VERSION=#{ar_version} bundle update")
 
     @database_adapters.each do |adapter|
       puts "----> Running tests with ActiveRecord #{ar_version} and #{adapter} adapter"

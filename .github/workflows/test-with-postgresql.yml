@@ -3,11 +3,11 @@ on: [pull_request]
 jobs:
   Test-With-PostgreSQL:
     runs-on: ubuntu-latest
-    container: ruby:2.7
+    container: ruby:3.0
     strategy:
       fail-fast: false
       matrix:
-        active_record: [6.1.4, 6.0.4, 5.2.6]
+        active_record: [6.1.4, 6.0.4]
     env:
       ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
       DATABASE_ADAPTER: postgresql
