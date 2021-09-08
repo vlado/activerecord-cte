@@ -13,6 +13,14 @@ postgresql:
   username: postgres
   password: postgres
   host: postgres
+  
+tidb:
+  adapter: mysql2
+  database: activerecord_cte_test
+  username: root
+  password: 
+  host: <%= ENV.fetch("MYSQL_HOST", "127.0.0.1") %>
+  port: 4000
 
 sqlite3:
   adapter: sqlite3

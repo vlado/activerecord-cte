@@ -1,0 +1,34 @@
+name: TiDB
+on: [pull_request]
+jobs:
+  Test-With-TiDB:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        active_record: [6.1.4]
+    env:
+      ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
+      DATABASE_ADAPTER: tidb
+      INSTALL_TIDB_GEM: true
+      INSTALL_MYSQL_GEM: true
+      RAILS_ENV: test
+      
+    services:
+      tidb:
+        image: hooopo/tidb-playground:v5.2.0
+        env:
+          TIDB_VERSION: v5.2.0
+        ports: ["4000:4000"]
+        
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Create db
+        run: sleep 30 && mysql --comments --host 127.0.0.1 --port 4000 -u root --password='' -e 'create database activerecord_cte_test;'
+      - name: Run tests
+        run: sleep 3 && bundle exec rake test
