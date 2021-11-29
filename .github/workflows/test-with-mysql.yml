@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        active_record: [6.1.4, 6.0.4]
+        active_record: [6.1.4]
     env:
       ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
       DATABASE_ADAPTER: mysql
