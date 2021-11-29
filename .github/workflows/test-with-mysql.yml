@@ -6,7 +6,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        active_record: [6.1.4, 6.0.4]
+        active_record: [6.1.4, 6.0.4, 5.2.6]
+        ruby: [2.6, 2.7, '3.0']
+        exclude:
+          - active_record: 5.2.6
+            ruby: '3.0'
     env:
       ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
       DATABASE_ADAPTER: mysql
@@ -20,6 +24,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
       - name: Run tests
         run: bundle exec rake test
