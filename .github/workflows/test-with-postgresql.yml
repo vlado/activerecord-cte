@@ -3,11 +3,15 @@ on: [pull_request]
 jobs:
   Test-With-PostgreSQL:
     runs-on: ubuntu-latest
-    container: ruby:3.0
+    container: ruby:${{ matrix.ruby }}
     strategy:
       fail-fast: false
       matrix:
-        active_record: [6.1.4, 6.0.4]
+        active_record: [6.1.4, 6.0.4, 5.2.6]
+        ruby: [2.6, 2.7, '3.0']
+        exclude:
+          - active_record: 5.2.6
+            ruby: '3.0'
     env:
       ACTIVE_RECORD_VERSION: ${{ matrix.active_record }}
       DATABASE_ADAPTER: postgresql
@@ -28,6 +32,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+      - name: Update bundler
+        run: gem update bundler # Use the latest bundler
       - name: Bundle dependencies
         run: bundle install
       - name: Run tests
