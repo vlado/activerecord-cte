@@ -55,8 +55,9 @@ module ActiveRecord
     def build_with(arel) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
       return if with_values.empty?
 
-      recursive = with_values.delete(:recursive)
-      with_statements = with_values.map do |with_value|
+      values = with_values.dup
+      recursive = values.delete(:recursive)
+      with_statements = values.map do |with_value|
         case with_value
         when String then Arel::Nodes::SqlLiteral.new(with_value)
         when Arel::Nodes::As then with_value
