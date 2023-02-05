@@ -16,7 +16,7 @@ class Activerecord::CteTest < ActiveSupport::TestCase
 
   def test_with_when_string_is_passed_as_an_argument
     # Guard can be removed when new version that includes https://github.com/rails/rails/pull/42563 is released and configured in test matrix
-    return if ActiveRecord.version == Gem::Version.create("6.1.4")
+    return if ActiveRecord.version == Gem::Version.create("6.1.7.2")
 
     popular_posts = Post.where("views_count > 100")
     popular_posts_from_cte = Post.with("popular_posts AS (SELECT * FROM posts WHERE views_count > 100)").from("popular_posts AS posts")
@@ -98,6 +98,34 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     assert_equal Post.select(:id).where("views_count > 100").to_a, recursive_rel
   end
 
+  def test_recursive_is_preserved_on_multiple_with_calls
+    posts = Arel::Table.new(:posts)
+    popular_posts = Arel::Table.new(:popular_posts)
+    anchor_term = posts.project(posts[:id], posts[:archived]).where(posts[:views_count].gt(100))
+    recursive_term = posts.project(posts[:id], posts[:archived]).join(popular_posts).on(posts[:id].eq(popular_posts[:id]))
+
+    recursive_rel = Post.with(:recursive, popular_posts: anchor_term.union(recursive_term)).from("popular_posts AS posts")
+
+    assert_equal Post.select(:id).where("views_count > 100").to_a, recursive_rel
+    assert_equal Post.select(:id).where("views_count > 100").where(archived: true).to_a, recursive_rel.where(archived: true)
+  end
+
+  def test_multiple_with_calls_with_recursive_and_non_recursive_queries
+    posts = Arel::Table.new(:posts)
+    popular_posts = Arel::Table.new(:popular_posts)
+    anchor_term = posts.project(posts[:id]).where(posts[:views_count].gt(100))
+    recursive_term = posts.project(posts[:id]).join(popular_posts).on(posts[:id].eq(popular_posts[:id]))
+
+    archived_popular_posts = Post
+      .with(archived_posts: Post.where(archived: true))
+      .with(:recursive, popular_posts: anchor_term.union(recursive_term))
+      .from("popular_posts AS posts")
+      .joins("INNER JOIN archived_posts ON archived_posts.id = posts.id")
+
+    assert archived_popular_posts.to_sql.start_with?("WITH RECURSIVE ")
+    assert_equal posts(:two, :three).pluck(:id).sort, archived_popular_posts.to_a.pluck(:id).sort
+  end
+
   def test_recursive_with_query_called_as_non_recursive
     # Recursive queries works in SQLite without RECURSIVE
     return if ActiveRecord::Base.connection.adapter_name == "SQLite"
@@ -177,9 +205,27 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     end
   end
 
+  def test_with_when_merging_relations_with_recursive_and_non_recursive_queries
+    non_recursive_rel = Post.with(archived_posts: Post.where(archived: true))
+
+    posts = Arel::Table.new(:posts)
+    popular_posts = Arel::Table.new(:popular_posts)
+    anchor_term = posts.project(posts[:id]).where(posts[:views_count].gt(100))
+    recursive_term = posts.project(posts[:id]).join(popular_posts).on(posts[:id].eq(popular_posts[:id]))
+    recursive_rel = Post.with(:recursive, popular_posts: anchor_term.union(recursive_term))
+
+    merged_rel = non_recursive_rel
+      .merge(recursive_rel)
+      .from("popular_posts AS posts")
+      .joins("INNER JOIN archived_posts ON archived_posts.id = posts.id")
+
+    assert merged_rel.to_sql.start_with?("WITH RECURSIVE ")
+    assert_equal posts(:two, :three).pluck(:id).sort, merged_rel.to_a.pluck(:id).sort
+  end
+
   def test_update_all_works_as_expected
     Post.with(most_popular: Post.where("views_count >= 100")).update_all(views_count: 123)
-    assert_equal [123], Post.pluck("DISTINCT views_count")
+    assert_equal [123], Post.pluck(Arel.sql("DISTINCT views_count"))
   end
 
   def test_delete_all_works_as_expected
