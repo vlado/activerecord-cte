@@ -15,6 +15,7 @@ module ActiveRecord
     private
 
     def merge_withs
+      relation.recursive_with = true if other.recursive_with?
       other_values = other.with_values.reject { |value| relation.with_values.include?(value) }
       relation.with!(*other_values) if other_values.any?
     end
@@ -30,7 +31,12 @@ module ActiveRecord
     end
 
     def with!(opts, *rest)
-      self.with_values += [opts] + rest
+      if opts == :recursive
+        self.recursive_with = true
+        self.with_values += rest
+      else
+        self.with_values += [opts] + rest
+      end
       self
     end
 
@@ -44,6 +50,16 @@ module ActiveRecord
       @values[:with] = values
     end
 
+    def recursive_with?
+      @values[:recursive_with]
+    end
+
+    def recursive_with=(value)
+      raise ImmutableRelation if @loaded
+
+      @values[:recursive_with] = value
+    end
+
     private
 
     def build_arel(*args)
@@ -55,7 +71,6 @@ module ActiveRecord
     def build_with(arel) # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity
       return if with_values.empty?
 
-      recursive = with_values.delete(:recursive)
       with_statements = with_values.map do |with_value|
         case with_value
         when String then Arel::Nodes::SqlLiteral.new(with_value)
@@ -67,7 +82,7 @@ module ActiveRecord
         end
       end
 
-      recursive ? arel.with(:recursive, with_statements) : arel.with(with_statements)
+      recursive_with? ? arel.with(:recursive, with_statements) : arel.with(with_statements)
     end
 
     def build_with_value_from_array(array)
