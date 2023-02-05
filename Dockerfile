@@ -1,4 +1,4 @@
-FROM ruby:3.0
+FROM ruby:3.1
 
 ENV APP_HOME /activerecord_cte
 RUN mkdir $APP_HOME
