@@ -99,7 +99,7 @@ module ActiveRecord
         expression = case value
                      when String then Arel::Nodes::SqlLiteral.new("(#{value})")
                      when ActiveRecord::Relation then value.arel
-                     when Arel::SelectManager, Arel::Nodes::Union then value
+                     when Arel::SelectManager, Arel::Nodes::Union, Arel::Nodes::UnionAll then value
                      else
                        raise ArgumentError, "Unsupported argument type: #{value} #{value.class}"
                      end
