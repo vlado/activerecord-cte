@@ -12,13 +12,6 @@ require "activerecord/cte"
 
 require "active_support/testing/autorun"
 
-# Suppress keyword parameters warnings for ActiveRecord < 6.0.3
-# Otherwise test output is flooded with warnings like:
-#   warning: Using the last argument as keyword parameters is deprecated; maybe ** should be added to the call
-if Warning.respond_to?("[]=") && ENV["ACTIVE_RECORD_VERSION"] && ENV["ACTIVE_RECORD_VERSION"] < "6.0.3"
-  Warning[:deprecated] = false
-end
-
 adapter = ENV.fetch("DATABASE_ADAPTER", "sqlite3")
 db_config = YAML.safe_load(ERB.new(File.read("test/database.yml")).result)[adapter]
 
@@ -28,7 +21,12 @@ ActiveRecord::Base.establish_connection(:test)
 
 ActiveSupport.on_load(:active_support_test_case) do
   include ActiveRecord::TestFixtures
-  self.fixture_path = "test/fixtures/"
+
+  if ActiveRecord.version >= Gem::Version.create("7.1")
+    self.fixture_paths = ["test/fixtures/"]
+  else
+    self.fixture_path = "test/fixtures/"
+  end
 
   ActiveSupport::TestCase.test_order = :random
 end

@@ -2,7 +2,7 @@ mysql:
   adapter: mysql2
   database: activerecord_cte_test
   username: root
-  password: root
+  password: <%= ENV.fetch("MYSQL_PASSWORD", "root") %>
   host: <%= ENV.fetch("MYSQL_HOST", "localhost") %>
   port: 3306
 
@@ -10,9 +10,9 @@ postgresql:
   adapter: postgresql
   encoding: unicode
   database: activerecord_cte_test
-  username: postgres
-  password: postgres
-  host: postgres
+  username: <%= ENV.fetch("PG_USERNAME", "postgres") %>
+  password: <%= ENV.fetch("PG_PASSWORD", "postgres") %>
+  host: <%= ENV.fetch("PG_HOST", "postgres") %>
 
 sqlite3:
   adapter: sqlite3

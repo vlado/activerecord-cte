@@ -16,7 +16,7 @@ class Activerecord::CteTest < ActiveSupport::TestCase
 
   def test_with_when_string_is_passed_as_an_argument
     # Guard can be removed when new version that includes https://github.com/rails/rails/pull/42563 is released and configured in test matrix
-    return if ActiveRecord.version == Gem::Version.create("6.1.7.2")
+    return if ActiveRecord.version >= Gem::Version.create("6.1")
 
     popular_posts = Post.where("views_count > 100")
     popular_posts_from_cte = Post.with("popular_posts AS (SELECT * FROM posts WHERE views_count > 100)").from("popular_posts AS posts")
@@ -180,7 +180,13 @@ class Activerecord::CteTest < ActiveSupport::TestCase
 
     merged = most_popular1.merge(most_popular2).from("most_popular as posts")
 
-    assert_equal posts(:two, :three, :four).sort, merged.sort
+    if ActiveRecord.version >= Gem::Version.create("7.1")
+      assert_raise ActiveRecord::StatementInvalid do
+        merged.load
+      end
+    else
+      assert_equal posts(:two, :three, :four).sort, merged.sort
+    end
   end
 
   def test_with_when_merging_relations_with_a_mixture_of_strings_and_relations
@@ -228,8 +234,9 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     assert_equal [123], Post.pluck(Arel.sql("DISTINCT views_count"))
   end
 
-  def test_delete_all_works_as_expected
-    Post.with(most_popular: Post.where("views_count >= 100")).delete_all
-    assert_equal 0, Post.count
+  def test_delete_all_raises_error_if_called_on_relation_with_cte
+    assert_raises ActiveRecord::ActiveRecordError do
+      Post.with(most_popular: Post.where("views_count >= 100")).delete_all
+    end
   end
 end

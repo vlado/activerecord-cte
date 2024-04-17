@@ -22,6 +22,9 @@ module ActiveRecord
   end
 
   class Relation
+    MULTI_VALUE_METHODS << :with unless MULTI_VALUE_METHODS.include?(:with)
+    INVALID_METHODS_FOR_DELETE_ALL << :with unless INVALID_METHODS_FOR_DELETE_ALL.include?(:with)
+
     class Merger
       prepend WithMerger
     end
@@ -108,3 +111,4 @@ module ActiveRecord
     end
   end
 end
+
