@@ -98,6 +98,19 @@ class Activerecord::CteTest < ActiveSupport::TestCase
     assert_equal Post.select(:id).where("views_count > 100").to_a, recursive_rel
   end
 
+  def test_recursive_with_call_union_all
+    posts = Arel::Table.new(:posts)
+    popular_posts = Arel::Table.new(:popular_posts)
+    anchor_term = posts.project(posts[:id]).where(posts[:views_count].gt(100))
+    recursive_term = posts.project(posts[:id]).join(popular_posts).on(posts[:id].eq(popular_posts[:id]))
+
+    recursive_rel = Post.with(:recursive, popular_posts: anchor_term.union(:all, recursive_term)).from("popular_posts AS posts")
+    expected_sql = <<~SQL.squish
+WITH RECURSIVE "popular_posts" AS ( SELECT "posts"."id" FROM "posts" WHERE "posts"."views_count" > 100 UNION ALL SELECT "posts"."id" FROM "posts" INNER JOIN "popular_posts" ON "posts"."id" = "popular_posts"."id" ) SELECT "posts".* FROM popular_posts AS posts
+    SQL
+    assert_equal recursive_rel.to_sql, expected_sql
+  end
+
   def test_recursive_is_preserved_on_multiple_with_calls
     posts = Arel::Table.new(:posts)
     popular_posts = Arel::Table.new(:popular_posts)
