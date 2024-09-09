@@ -12,4 +12,4 @@ gem "activerecord", ACTIVE_RECORD_VERSION
 gem "mysql2" if ENV["INSTALL_MYSQL_GEM"]
 gem "pg" if ENV["INSTALL_PG_GEM"]
 
-gem "sqlite3", "1.4.2"
+gem "sqlite3", "1.7.3"
