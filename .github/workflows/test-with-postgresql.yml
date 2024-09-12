@@ -40,12 +40,5 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-      - name: Wait for PostgreSQL
-        run: |
-          for i in {1..30}; do
-            pg_isready -h postgres && break
-            echo "Waiting for PostgreSQL..."
-            sleep 1
-          done
       - name: Run tests
         run: bundle exec rake test
