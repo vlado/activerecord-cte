@@ -3,7 +3,6 @@ on: [pull_request]
 jobs:
   Test-With-PostgreSQL:
     runs-on: ubuntu-latest
-    container: ruby:${{ matrix.ruby }}
     strategy:
       fail-fast: false
       matrix:
